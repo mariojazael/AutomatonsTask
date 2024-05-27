@@ -1,8 +1,11 @@
-import Models.State;
+package org.ramirezmario;
+
+import org.ramirezmario.Models.State;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
+import java.util.List;
 
 /*
     Class's purpose: Class in charge of the object management and

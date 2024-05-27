@@ -1,4 +1,4 @@
-package Models;
+package org.ramirezmario.Models;
 
 public class State {
     private String name;
