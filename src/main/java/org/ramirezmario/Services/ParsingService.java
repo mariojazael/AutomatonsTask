@@ -1,34 +1,68 @@
 package org.ramirezmario.Services;
 
-import org.ramirezmario.ApplicationConfig;
 import org.ramirezmario.Models.State;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
-
-/*
-    This class holds the business logic.
- */
 
 @Service
 public class ParsingService {
-    private static final HashMap<String, State> TRANSFORMATIONS_MAP = new ApplicationConfig().transformationsMap();
+
+    private final HashMap<String, State> transformationsMap;
+    private final State initialState;
+
+    @Autowired
+    public ParsingService(ApplicationContext applicationContext) {
+        this.transformationsMap = applicationContext.getBean("transformationsMap", HashMap.class);
+        this.initialState = applicationContext.getBean("q0", State.class);
+    }
 
     // Returns true as String if the entered string is acceptable for the automaton.
     // Returns false if the given String does not leave the automaton in acceptable state.
-    public static String parse(String string){
-        final StringBuilder currentStateName = new StringBuilder("q0");
-        return new AnnotationConfigApplicationContext(ApplicationConfig.class)
-                .getBean(Stream.iterate(0, i -> i + 1)
-                        .limit(string.length())
-                        .map(i -> currentStateName.replace(0, 2, TRANSFORMATIONS_MAP.get(currentStateName.toString() + string.charAt(i))
-                                .getName()))
-                        .toList()
-                        .get(string.length() - 1)
-                        .toString(), State.class)
-                .isTerminal();
+    public String parse(String string) {
+        final HashMap<String, AtomicInteger> resultsMap = initResultsMap();
+        final AtomicReference<State> currentState = new AtomicReference<>(initialState);
+        Arrays.stream(prepareData(string)).sequential()
+                .forEach(token -> {
+                    Stream.of(token.split(""))
+                            .forEach(character -> currentState.set(transformationsMap.get(currentState.get().getName() + character)));
+                    if (currentState.get().isTerminal()) resultsMap.get(currentState.get().getToken()).getAndIncrement();
+                    else resultsMap.get("Errores").getAndIncrement();
+                    currentState.set(initialState);
+                });
+        return resultsMap.toString();
+    }
+
+    private HashMap<String, AtomicInteger> initResultsMap() {
+        return new HashMap<>() {{
+            put("Parentesis", new AtomicInteger(0));
+            put("Errores", new AtomicInteger(0));
+        }};
+    }
+
+    private String[] prepareData(String data){
+        List<String> words = new ArrayList<>();
+        StringBuilder word = new StringBuilder();
+        for (int i = 0; i < data.length(); i++) {
+            char c = data.charAt(i);
+            if (c == ' ' || c == '\t' || c == '\n') {
+                if (!word.isEmpty()) {
+                    words.add(word.toString());
+                    word.setLength(0);
+                }
+            } else word.append(c);
+
+        }
+        if (!word.isEmpty()) words.add(word.toString());
+        return words.toArray(new String[0]);
     }
 }
+

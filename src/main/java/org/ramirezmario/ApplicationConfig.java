@@ -5,69 +5,61 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-/*
-    Class's purpose: Class in charge of the object management and
-    creation.
-
-    Description: It provides singletons to the application. It's
-    based on IoC (Inversion of Control) container that is capable
-    of assuming the whole responsibility on the class's purpose.
- */
 @Configuration
 public class ApplicationConfig {
+
     @Bean
-    public State q0(){
-        return new State("q0", false);
+    public State q0() {
+        return new State("q0", false, null);
     }
 
     @Bean
-    public State q1(){
-        return new State("q1", false);
+    public State q1() {
+        return new State("q1", true, "Parentesis");
     }
 
     @Bean
-    public State q2(){
-        return new State("q2", true);
+    public State q2() {
+        return new State("q2", false, "Error");
     }
 
     @Bean
-    public State q3(){
-        return new State("q3", false);
+    public HashMap<String, State> transformationsMap() {
+        HashMap<String, State> map = new HashMap<>();
+        map.put("q0(", q1());
+        map.put("q0)", q1());
+        putAllCharacters(map, q1(), letters(), q2());
+        putAllCharacters(map, q2(), letters(), q2());
+        return map;
+    }
+
+    private void putAllCharacters(HashMap<String, State> map, State currentState, Set<Character> characterSet, State targetState) {
+        characterSet.forEach(character -> map.put(currentState.getName() + character, targetState));
     }
 
     @Bean
-    public State q4(){
-        return new State("q4", false);
+    public Set<Character> lowerCaseLetters() {
+        return Stream.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     @Bean
-    public State q5(){
-        return new State("q5", true);
+    public Set<Character> upperCaseLetters() {
+        return Stream.of('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     @Bean
-    public HashMap<String, State> transformationsMap(){
-        return new HashMap<>() {{
-            put("q0a", q1());
-            put("q0b", q3());
-            put("q0c", q3());
-            put("q1a", q4());
-            put("q1b", q5());
-            put("q1c", q2());
-            put("q2a", q2());
-            put("q2b", q2());
-            put("q2c", q2());
-            put("q3a", q4());
-            put("q3b", q3());
-            put("q3c", q3());
-            put("q4a", q4());
-            put("q4b", q5());
-            put("q4c", q3());
-            put("q5a", q4());
-            put("q5b", q3());
-            put("q5c", q3());
+    public Set<Character> letters() {
+        return new HashSet<>() {{
+            addAll(upperCaseLetters());
+            addAll(lowerCaseLetters());
         }};
     }
 }
+

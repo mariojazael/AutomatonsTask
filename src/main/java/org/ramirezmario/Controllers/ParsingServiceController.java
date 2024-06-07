@@ -1,25 +1,39 @@
 package org.ramirezmario.Controllers;
 
 import org.ramirezmario.Services.ParsingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/parsing")
 public class ParsingServiceController {
 
-    @GetMapping("/parse")
-    @ResponseBody
-    public String parseData(@RequestParam String data) {
-        return ParsingService.parse(data);
+    private final ParsingService parsingService;
+
+    @Autowired
+    public ParsingServiceController(ParsingService parsingService) {
+        this.parsingService = parsingService;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "Index"; // Thymeleaf buscará un archivo `index.html` en `src/main/resources/templates`
+    @PostMapping("/parse")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> parse(@RequestBody Map<String, String> request) throws InterruptedException {
+        Thread.sleep(1000);
+        String content = request.get("content");
+        Map<String, String> response = new HashMap<>();
+        response.put("result", parsingService.parse(content));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/tokenizer")
+    public String fileReader() {
+        return "tokenizer";
     }
 }
+
 
