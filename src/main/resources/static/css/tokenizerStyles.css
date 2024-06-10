@@ -8,7 +8,7 @@ h1 {
 }
 
 .container {
-    width: 50%; /* Adjusted width to 50% of the screen */
+    width: 65%; /* Adjusted width to 50% of the screen */
     margin: 0; /* Removed auto margin to align to the left */
 }
 

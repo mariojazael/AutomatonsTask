@@ -32,7 +32,7 @@ public class ParsingServiceController {
 
     @GetMapping("/tokenizer")
     public String fileReader() {
-        return "tokenizer";
+        return "tokenizer"; // Returns a html file named "tokenizer.html" located in static/templates/
     }
 }
 

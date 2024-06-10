@@ -35,7 +35,6 @@ document.getElementById('submitButton').addEventListener('click', function() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log("hl")
             document.getElementById('responseContent').value = data.result;
             hideSpinner();
         })
