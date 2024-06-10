@@ -30,7 +30,6 @@ public class ParsingService {
         Arrays.stream(prepareData(string)).sequential()
                 .forEach(token -> {
                     Stream.of(token.split(""))
-                            .peek(System.out::println)
                             .forEach(character -> currentState.set(transformationsMap.get(currentState.get().getName() + character)));
                     if (currentState.get().isTerminal()) resultsMap.get(currentState.get().getToken()).getAndIncrement();
                     else if(currentState.get().getToken().equals("Unsolved")) resultsMap.get(solveToken(token)).getAndIncrement();
