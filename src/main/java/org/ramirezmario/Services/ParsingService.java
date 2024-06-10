@@ -18,15 +18,19 @@ public class ParsingService {
     private final State initialState;
     private final Set<String> fixedWords;
 
+    private final HashMap<String, AtomicInteger> resultsMap;
+
     @Autowired
     public ParsingService(ApplicationContext applicationContext) {
         this.transformationsMap = applicationContext.getBean("transformationsMap", HashMap.class);
         this.initialState = applicationContext.getBean("q0", State.class);
         this.fixedWords = applicationContext.getBean("fixedWords", Set.class);
+        this.resultsMap = applicationContext.getBean("resultsMap", HashMap.class);
     }
 
     public String parse(String string) {
-        final HashMap<String, AtomicInteger> resultsMap = new AnnotationConfigApplicationContext().getBean("resultsMap", HashMap.class);
+        resetMap(resultsMap);
+        final HashMap<String, AtomicInteger> resultsMap = this.resultsMap;
         final AtomicReference<State> currentState = new AtomicReference<>(initialState);
         Arrays.stream(prepareData(string)).sequential()
                 .forEach(token -> {
@@ -59,6 +63,10 @@ public class ParsingService {
 
     private String solveToken(String token){
         return fixedWords.contains(token) ? "Palabras reservadas" : "Identificadores";
+    }
+
+    private void resetMap(Map<String, AtomicInteger> map){
+        map.forEach((key, value) -> value.set(0));
     }
 }
 
