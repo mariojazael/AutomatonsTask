@@ -3,6 +3,7 @@ package org.ramirezmario.Services;
 import org.ramirezmario.Models.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,7 +26,7 @@ public class ParsingService {
     }
 
     public String parse(String string) {
-        final HashMap<String, AtomicInteger> resultsMap = initResultsMap();
+        final HashMap<String, AtomicInteger> resultsMap = new AnnotationConfigApplicationContext().getBean("resultsMap", HashMap.class);
         final AtomicReference<State> currentState = new AtomicReference<>(initialState);
         Arrays.stream(prepareData(string)).sequential()
                 .forEach(token -> {
@@ -37,27 +38,6 @@ public class ParsingService {
                     currentState.set(initialState);
                 });
         return resultsMap.toString();
-    }
-
-    private HashMap<String, AtomicInteger> initResultsMap() {
-        return new HashMap<>() {{
-            put("Parentesis", new AtomicInteger(0));
-            put("Errores", new AtomicInteger(0));
-            put("Palabras reservadas", new AtomicInteger(0));
-            put("Identificadores", new AtomicInteger(0));
-            put("Llaves", new AtomicInteger(0));
-            put("Operadores aritmeticos", new AtomicInteger(0));
-            put("Comentarios", new AtomicInteger(0));
-            put("Comentarios de linea", new AtomicInteger(0));
-            put("Cadenas de caracteres", new AtomicInteger(0));
-            put("Operadores de decremento", new AtomicInteger(0));
-            put("Numeros enteros", new AtomicInteger(0));
-            put("Numeros decimales", new AtomicInteger(0));
-            put("Operadores de asignacion", new AtomicInteger(0));
-            put("Operadores relacionales", new AtomicInteger(0));
-            put("Operadores de incremento", new AtomicInteger(0));
-            put("Operadores logicos", new AtomicInteger(0));
-        }};
     }
 
     private String[] prepareData(String data){

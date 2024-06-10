@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,6 +78,27 @@ public class ApplicationConfig {
     @Bean State q24() { return new State ("q24", true, "Operadores logicos"); }
 
     @Bean State q25() { return new State ("q25", false, "Operadores logicos|"); }
+
+    @Bean HashMap<String, AtomicInteger> resultsMap(){
+        return new HashMap<>() {{
+            put("Parentesis", new AtomicInteger(0));
+            put("Errores", new AtomicInteger(0));
+            put("Palabras reservadas", new AtomicInteger(0));
+            put("Identificadores", new AtomicInteger(0));
+            put("Llaves", new AtomicInteger(0));
+            put("Operadores aritmeticos", new AtomicInteger(0));
+            put("Comentarios", new AtomicInteger(0));
+            put("Comentarios de linea", new AtomicInteger(0));
+            put("Cadenas de caracteres", new AtomicInteger(0));
+            put("Operadores de decremento", new AtomicInteger(0));
+            put("Numeros enteros", new AtomicInteger(0));
+            put("Numeros decimales", new AtomicInteger(0));
+            put("Operadores de asignacion", new AtomicInteger(0));
+            put("Operadores relacionales", new AtomicInteger(0));
+            put("Operadores de incremento", new AtomicInteger(0));
+            put("Operadores logicos", new AtomicInteger(0));
+        }};
+    }
 
     @Bean
     public HashMap<String, State> transformationsMap() {
